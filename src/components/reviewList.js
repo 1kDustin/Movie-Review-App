@@ -1,5 +1,6 @@
 import React from 'react';
-import createComments from './createComments';
+import CreateComments from './createComments';
+import Comments from './comments';
 
 export default class Reviews extends React.Component {
     constructor(props){
@@ -9,23 +10,17 @@ export default class Reviews extends React.Component {
         this.movieName = this.props.movieName;
         this.imageUrl = this.props.imageUrl // https://cdn3.movieweb.com/i/article/1wGSR78PMsJoRpOYfGYm7kQUihFGdH/1200:100/The-Other-Guys-10th-Anniversary-Restrospective.jpg
         this.thoughts = this.props.thoughts;
-        this.leaveReview = false;
+        this.leaveReview = false;       
         this.setLeaveReview = this.setLeaveReview.bind(this);
         this.pullAPI = this.pullAPI.bind(this);
         this.state = {
-           Comments: [
-            {
-                "movieName": "Test",
-                "stars": "5",
-                "name": "Dylan",
-                "review": "Dylan"
-            }
-           ]   
+            movieName: this.props.movieName,
+            Comments: []   
         };
     }
     setLeaveReview() {
         this.leaveReview = !this.leaveReview;
-        this.setState({});
+        this.setState({...this.state});
     }
     pullAPI() {
             // Code to GET 
@@ -36,22 +31,29 @@ export default class Reviews extends React.Component {
                 headers: myHeaders,
                 redirect: 'follow'
             };
-            let apiUrl = "https://moviereviewlist.herokuapp.com/api/comments?movieName=" + "Test Movie 4"
+            let apiUrl = "https://moviereviewlist.herokuapp.com/api/comments?movieName=" + this.props.movieName
             myHeaders.append("Content-Type", "application/json");
             fetch(apiUrl, apiOptions_getComments)
             .then(response => response.text())
-            .then(result => alert(result))
+            .then(result => {
+                this.setState({
+                    ...this.state,
+                    Comments: JSON.parse(result)
+                })
+            })
             .catch(error => console.log('error', error));
         }
     componentDidMount(){
         this.pullAPI()
+        console.log(this.state);
     }
     render() {
+        console.log(this.state)
         return <div className="container" style={ {backgroundImage: 'https://www.pngjoy.com/pngm/7/245519_film-reel-film-strip-transparent-background-png-download.png'}}>
                 <div className="card promoting-card">
                     <div className="card-body d-flex flex-row">
                         <div>
-                            <h4 className="card-title font-weight-bold mb-2">{this.title}</h4>
+                            <h4 className="card-title font-weight-bold mb-2">{this.movieName}</h4>
                                 <div className="rating">
                                     <span>☆</span><span>☆</span><span>☆</span><span>☆</span><span>☆</span>
                                 </div>
@@ -66,18 +68,23 @@ export default class Reviews extends React.Component {
                                 <div className="mask rgba-white-slight"></div>
                             </a>
                     </div>
+                    {!this.leaveReview ?
                     <div className="card-body">
-                    {!this.leaveReview ? <div><p>
+                    <div>
+                        <p>
                             <a className="btn btn-flat red-text p-1 my-1 mr-0 mml-1 collapsed" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                 {this.body}
                             </a>
                         </p>
                         <div className="collapse" id="collapseExample">
                             <div className="card card-body">
-                                {this.thoughts}
+                                {this.state.Comments.map(comment => {
+                                   return (<Comments name={comment.name} stars={comment.stars} review={comment.review} />)
+                                })
+                            }
                             </div>
-                        </div></div> : <createComments />}
-                    </div>
+                        </div></div>
+                        </div> : <CreateComments movieName="The Other Guys"/>}
                     </div>
                 </div>
     }

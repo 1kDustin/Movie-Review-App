@@ -7,10 +7,16 @@ export default class Comments extends React.Component {
         this.stars = this.props.stars;
         this.review = this.props.review;
     }
+    componentDidMount(){
+        console.log("RAN!")
+    }
     render() {
-        return <div className = "collapse" id="collapseExample">
-            <div className = "card card-body">
-                {this.name} {this.stars} {this.reviews}
+        return <div className = "card-body">
+            <div>
+                <h2>{this.name}</h2>
+                <span>{this.stars}</span>
+                <br></br>
+                <p>{this.review}</p> 
             </div>
         </div>
     };

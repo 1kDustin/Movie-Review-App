@@ -1,11 +1,12 @@
 import React from 'react';
 
-export default class Comments extends React.Component {
+export default class CreateComments extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             comments: [],
             newComment: {
+                movieName: this.props.movieName,
                 name: '',
                 review: '',
                 stars: 0
@@ -51,10 +52,27 @@ export default class Comments extends React.Component {
             }
         })
     }
-    handleFormSubmit() {
+    handleFormSubmit(e) { 
         let newComment = this.state.newComment;
-        alert (JSON.stringify(newComment));
-    }
+        let commentData = JSON.stringify({
+            "movieName": this.props.movieName,
+            "stars": newComment.stars,
+            "name": newComment.name,
+            "review": newComment.review
+        });
+        console.log(commentData)
+        let myHeaders = new Headers();
+        let apiOptions_CreateComment = {
+            method: 'POST',
+            headers: myHeaders,
+            body: commentData
+        };
+            myHeaders.append("Content-Type", "application/json");
+            fetch("https://moviereviewlist.herokuapp.com/api/comments", apiOptions_CreateComment)
+            .then(response => response.text())
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+    };
     render() {
         return (
             <form>
@@ -76,7 +94,7 @@ export default class Comments extends React.Component {
                     <label htmlFor="comments">Review</label>
                     <textarea onChange={(e) => this.handleReview(e.target.value)} className="form-control" id="commentSection"></textarea>
                 </div>
-                <button onClick = {(e) => this.handleFormSubmit()} className = "btn btn-primary">Submit</button>
+                <button onClick = {(e) => this.handleFormSubmit(e)} className = "btn btn-primary">Submit</button>
             </form>
         )
     }
