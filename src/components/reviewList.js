@@ -36,6 +36,7 @@ export default class Reviews extends React.Component {
             fetch(apiUrl, apiOptions_getComments)
             .then(response => response.text())
             .then(result => {
+                console.log(result);
                 this.setState({
                     ...this.state,
                     Comments: JSON.parse(result)
@@ -79,7 +80,8 @@ export default class Reviews extends React.Component {
                         <div className="collapse" id="collapseExample">
                             <div className="card card-body">
                                 {this.state.Comments.map(comment => {
-                                   return (<Comments name={comment.name} stars={comment.stars} review={comment.review} />)
+                                    console.log(comment);
+                                   return (<Comments name={comment.name} stars={comment.stars} review={comment.review} id={comment._id}/>)
                                 })
                             }
                             </div>
